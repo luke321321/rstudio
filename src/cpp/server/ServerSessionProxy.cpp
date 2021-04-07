@@ -1037,6 +1037,15 @@ void proxyLocalhostRequest(
    // decoding code)
    request.removeHeader("Accept-Encoding");
 
+   // add proxy headers 
+   std::string contextPath = request.proxiedUri();
+   // -1 to remove trailing backslash
+   unsigned contextPathLen = contextPath.size() - request.uri().size() - 1; 
+   contextPath.resize(contextPathLen);
+   request.setHeader("X-Forwarded-Context", contextPath);
+   request.setHeader("X-ProxyContextPath", contextPath);
+   request.setHeader("X-Forwarded-Prefix", contextPath);
+
    // specify closing of the connection after the request unless this is
    // an attempt to upgrade to websockets
    if (!http::util::isWSUpgradeRequest(request))
